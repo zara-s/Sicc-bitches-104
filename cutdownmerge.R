@@ -25,5 +25,5 @@ colnames(education1)[colnames(education1)=="Value"] <- "Primary"
 LeftJoin <- fertility1 %>% 
   left_join(lifeexpectancy1, by="Date") %>% 
   left_join(education1, by="Date") %>% 
-  select(Date, Fertility, 'Life Expectancy', Primary)
+  select(Date, 'Country Name', Fertility,'Life Expectancy', Primary)
 
