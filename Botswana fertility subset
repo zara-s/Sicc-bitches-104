@@ -1,0 +1,42 @@
+library(tidyverse)
+library(lubridate)
+
+fertility <- read_csv("new fertility (Cut Down 36).csv")
+lifeexpectancy <- read_csv("new life expectancy (Cut Down 36).csv")
+education <- read_csv("new primary (Cut Down 36).csv")
+
+fertility1 <- fertility %>%
+  gather("Date", "Value", c(-CountryName))
+
+lifeexpectancy1 <- lifeexpectancy %>%
+  gather("Date", "Value", c(-CountryName))
+
+education1 <- education %>%
+  gather("Date", "Value", c(-CountryName))
+
+
+# Rename a column in R
+#colnames(data)[colnames(data)==“old_name”] <- “new_name”
+
+colnames(fertility1)[colnames(fertility1)=="Value"] <- "Fertility"
+colnames(lifeexpectancy1)[colnames(lifeexpectancy1)=="Value"] <- "Life Expectancy"
+colnames(education1)[colnames(education1)=="Value"] <- "Primary"
+
+LeftJoin <- fertility1 %>% 
+  left_join(lifeexpectancy1, by="Date") %>% 
+  left_join(education1, by="Date") %>% 
+  select(Date, CountryName, Fertility,'Life Expectancy', Primary)
+
+
+LeftJoin2 <- LeftJoin [which(LeftJoin$CountryName=='Botswana'
+                             & LeftJoin$Date > 1969), ]
+
+LeftJoin3 <-  LeftJoin2 %>% 
+  gather(key, value, c(-Date, -CountryName))
+
+LeftJoin4 <- LeftJoin3 [which(LeftJoin3$key =='Fertility'
+                             & LeftJoin3$Date > 1969), ]
+
+ggplot(LeftJoin4, aes(Date, value, group=CountryName, colour=CountryName))+
+  geom_smooth() +
+  facet_wrap(~key)
